@@ -13,14 +13,19 @@ import { ApiTags } from '@nestjs/swagger';
 export class ArticleController {
     constructor(private readonly articleService: ArticleService){}
 
-    @Post()
-    @UseGuards(AuthGuard)
-    async createArticle(@User() currentUser, @Body('article') createArticleDTO: CreateArticleDTO): Promise<ArticleResponseInterface>{
-        const article = await this.articleService.createArticle(currentUser, createArticleDTO);
+@Post()
+@UseGuards(AuthGuard)
+async createArticles(@User() currentUser, @Body('articles') createArticlesDTO: CreateArticleDTO[]): Promise<ArticleResponseInterface[]> {
+    const articles = await Promise.all(
+        createArticlesDTO.map(createArticleDTO => 
+            this.articleService.createArticle(currentUser, createArticleDTO)
+        )
+    );
 
-        return this.articleService.createArticleResponse(article);
-    }
-
+    return articles.map(article => 
+        this.articleService.createArticleResponse(article)
+    );
+}
     @Get(':slug')
     async FindArticeleBySlug(@Param('slug') slug: string): Promise<ArticleResponseInterface>{
         const article = await this.articleService.findArticleBySlug(slug);
