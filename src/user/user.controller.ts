@@ -7,7 +7,9 @@ import { UserEntity } from './user.entity';
 import { User } from './decoratores/user.decorator';
 import { AuthGuard } from './Guards/auth.guard';
 import { UpdateUserDTO } from './DTO/updateuser.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('User')
 @Controller()
 export class UserController {
     constructor(private readonly userService: UserService){};

@@ -3,7 +3,9 @@ import { ProfileService } from './profile.service';
 import { User } from 'src/user/decoratores/user.decorator';
 import { ProfileResponseInterface } from './type/profileResponse.interface';
 import { AuthGuard } from 'src/user/Guards/auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Profiles')
 @Controller('profiles')
 export class ProfileController {
     constructor(private readonly profileService: ProfileService){}
