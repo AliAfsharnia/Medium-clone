@@ -2,6 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty } from "class-validator";
 
 export class CreateArticleDTO{
+    
     @ApiProperty({
         example: 'our little lies',
         required: true

@@ -5,18 +5,15 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const options = new DocumentBuilder()
+  const options = new DocumentBuilder().addBearerAuth()
   .setTitle('Medium Clone')
   .setDescription('a practice project')
   .setVersion('1.0')
-  .addServer('http://localhost:3000/', 'Local environment')
-  .addServer('https://staging.yourapi.com/', 'Staging')
-  .addServer('https://production.yourapi.com/', 'Production')
   .addTag('medium')
   .build();
 
 const document = SwaggerModule.createDocument(app, options);
-SwaggerModule.setup('api', app, document);
+SwaggerModule.setup('swagger', app, document);
 
   await app.listen(3000);
 }

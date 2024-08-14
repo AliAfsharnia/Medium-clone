@@ -6,16 +6,21 @@ import { CreateArticleDTO } from './DTO/createarticle.dto';
 import { ArticleResponseInterface } from './type/articleResponse.interface';
 import { UpdateArticleDTO } from './DTO/updatearticle.dto';
 import { ArticlesResponseInterface } from './type/articlesResponse.interface';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBasicAuth, ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('articles')
 @Controller('articles')
 export class ArticleController {
     constructor(private readonly articleService: ArticleService){}
 
-@Post()
-@UseGuards(AuthGuard)
-async createArticles(@User() currentUser, @Body('articles') createArticlesDTO: CreateArticleDTO[]): Promise<ArticleResponseInterface[]> {
+    @ApiBearerAuth()
+    @Post()
+    @ApiBody({
+        type: CreateArticleDTO,
+        description: 'Json structure for user object',
+    })
+    @UseGuards(AuthGuard)
+    async createArticles(@User() currentUser, @Body() createArticlesDTO: CreateArticleDTO[]): Promise<ArticleResponseInterface[]> {
     const articles = await Promise.all(
         createArticlesDTO.map(createArticleDTO => 
             this.articleService.createArticle(currentUser, createArticleDTO)
@@ -33,20 +38,27 @@ async createArticles(@User() currentUser, @Body('articles') createArticlesDTO: C
         return this.articleService.createArticleResponse(article);
     }
 
+    @ApiBearerAuth()
     @Delete(':slug')
     @UseGuards(AuthGuard)
     async deleteArticle(@User('id') currentUserId: number, @Param('slug') slug: string){
         return await this.articleService.deleteArticle(currentUserId, slug);
     }
 
+    @ApiBearerAuth()
     @Put(':slug')
+    @ApiBody({
+        type: UpdateArticleDTO,
+        description: 'Json structure for user object',
+    })
     @UseGuards(AuthGuard)
-    async updateUser(@User('id')  currentUserId:number, @Param('slug') slug: string,  @Body('article') updateArticleDTO: UpdateArticleDTO): Promise<ArticleResponseInterface>{
+    async updateUser(@User('id')  currentUserId:number, @Param('slug') slug: string,  @Body() updateArticleDTO: UpdateArticleDTO): Promise<ArticleResponseInterface>{
         const article = await this.articleService.updateUser(currentUserId, slug, updateArticleDTO);
 
         return this.articleService.createArticleResponse(article);
     }
 
+    @ApiBearerAuth()
     @Post(':slug/favorite')
     @UseGuards(AuthGuard)
     async likingArticles(@User('id') currentUserId: number, @Param('slug') slug: string ): Promise<ArticleResponseInterface>{
@@ -54,6 +66,7 @@ async createArticles(@User() currentUser, @Body('articles') createArticlesDTO: C
         return this.articleService.createArticleResponse(article);
     }
 
+    @ApiBearerAuth()
     @Delete(':slug/favorite')
     @UseGuards(AuthGuard)
     async disLikingArticles(@User('id') currentUserId: number, @Param('slug') slug: string ): Promise<ArticleResponseInterface>{
@@ -61,6 +74,7 @@ async createArticles(@User() currentUser, @Body('articles') createArticlesDTO: C
         return this.articleService.createArticleResponse(article);
     }
 
+    @ApiBearerAuth()
     @Get('getfeed')
     @UseGuards(AuthGuard)
     async getFeed(@User('id') currentUserId: number, @Query() query: any): Promise<ArticlesResponseInterface>{
